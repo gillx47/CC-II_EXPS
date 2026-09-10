@@ -1,0 +1,67 @@
+class Solution {
+public:
+    // BIT MANUPULATION/BITMASK SOLUTION
+    vector<vector<int>> subsets(vector<int>& nums) {
+        // NOTE: EVERYWHERE IN SOLUTION, ^ MEANS POWER
+        int n = nums.size();
+
+        // FOR ANY VECTOR SIZED N, THERS ARE TOTAL OF 2 ^ N SUBSETS
+        // CALCULATE 2 ^ N, 2 ^ N == 1 << N
+        int totalSubsets = 1 << n;
+
+        vector<vector<int>> ans;
+
+        // WE CAN REPRESENT EACH SUBSET USING A BINARY BITMASK.
+        // EACH BIT INDICATES WHETHER THE CORRESPONDING ELEMENT IS INCLUDED.
+        // EX, WITH N = 3, WE HAVE 2 ^ 3 = 8 SUBSETS
+        // EX, WITH N = 4, WE HAVE 2 ^ 4 = 16 SUBSETS
+        // SO, TO REPRESENT THE 2 ^ N SUBSETS, WE NEED MAXIMUM OF N BITS
+        // BINARY BITS REPRESENTATION OF 8 SUBSETS
+        // THE POSITION OF EACH BIT CORRESPONDS TO THE INDEX OF AN ELEMENT IN NUMS.
+        // BIT POSITIONS
+        // 2    1    0
+        // 2^2  2^1  2^0
+        // 0    0    0 -> TAKE NONE
+        // 0    0    1 -> TAKE 0 INDEXED NUMBER
+        // 0    1    0 -> TAKE 1 INDEXED NUMBER
+        // 0    1    1 -> TAKE 0 & 1 INDEXED NUMBER
+        // 1    0    0 -> TAKE 2 INDEXED NUMBER
+        // 1    0    1 -> TAKE 0 & 2 INDEXED NUMBER
+        // 1    1    0 -> TAKE 1 & 2 INDEXED NUMBER
+        // 1    1    1 -> TAKE 0, 1 & 2 INDEXED NUMBER
+        // THIS WAY, BY REPRESENTING THE TOTALSUBETS WITH BINARY REPRESENTATION,
+        // WE CAN DERIVE FOR THE CURRENT SUBSET FROM 0 -> TOTALSUBSETS - 1,
+        // WHICH INDEXED NUMBERS TO INCLUDE FROM THE NUMS IN THE CURRENT SUBSET
+
+        // THUS, THE OUTER LOOP RUNS TILL 0 -> TOTALSUBSETS - 1
+        // WHICH REPRESENT FOR ANY SUBSET, WHICH NUMBERS TO INCLUDE
+        for(int val = 0; val < totalSubsets; val++) {
+            // CONTAINER TO STORE CURRENT SUBSET
+            vector<int> subset;
+        
+            // TRAVERSE OVER N BITS OF CURRENT BIT REPRESENTATION
+            // EX:
+            // 0 -> 0 0 0 
+            // 1 -> 0 0 1
+            // 2 -> 0 1 0
+            // 3 -> 0 1 1
+            // 4 -> 1 0 0
+            // 5 -> 1 0 1
+            // 6 -> 1 1 0
+            // 7 -> 1 1 1
+            // WE TRAVERSE OVER BITS OF EACH SUBSET REPRESENTATION
+            // VAL = 6 -> 110 IN BINARY
+            // FROM BIT 0 TO BIT 2, WE CHECK: 0 -> 1 -> 1
+            for(int i = 0; i < n; i++) {
+                // IF THE iTH BIT IS SET, INCLUDE nums[i] IN THE CURRENT SUBSET.
+                if(val & (1 << i)) {
+                    subset.push_back(nums[i]);
+                }
+            }
+
+            ans.push_back(subset);
+        }
+
+        return ans;
+    }
+};
