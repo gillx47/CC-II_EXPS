@@ -1,0 +1,43 @@
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+
+class Solution {
+public:
+    bool canCross(std::vector<int>& stones) {
+        int n = stones.size();
+        
+        // Edge case: if the second stone isn't at position 1, the first jump (1 unit) fails.
+        if (stones[1] - stones[0] != 1) return false;
+        
+        // Map each stone position to the set of jump sizes that can land on it
+        std::unordered_map<int, std::unordered_set<int>> dp;
+        for (int stone : stones) {
+            dp[stone] = std::unordered_set<int>();
+        }
+        
+        // Base case: at stone 0, the incoming jump size to get here can be considered 0
+        dp[stones[0]].insert(0);
+        
+        for (int i = 0; i < n; ++i) {
+            int currStone = stones[i];
+            
+            // For every jump size that brought us to this stone
+            for (int jump : dp[currStone]) {
+                // Try making a jump of (jump - 1), jump, and (jump + 1)
+                for (int nextJump : {jump - 1, jump, jump + 1}) {
+                    if (nextJump > 0) {
+                        int nextStone = currStone + nextJump;
+                        // If a stone exists at the target position, add this jump size to its set
+                        if (dp.find(nextStone) != dp.end()) {
+                            dp[nextStone].insert(nextJump);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // If the last stone has at least one valid jump reaching it, return true
+        return !dp[stones.back()].empty();
+    }
+};
